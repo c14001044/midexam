@@ -301,10 +301,7 @@ int fft_for_5r(double *x_r, double *x_i, double *y_r, double *y_i, int N)
 	{
 		y_r[i]=x_r[i];
 		y_i[i]=x_i[i];
-		
-		
-		
-		
+	
 	}
 	
 	
@@ -333,9 +330,9 @@ int fft_for_5r(double *x_r, double *x_i, double *y_r, double *y_i, int N)
 		}
 		m=N/5;
 		  
-		while(j>=5*m & m>0)
+		while(j>=4*m & m>0)
 		{		
-			j=j-5*m; 
+			j=j-4*m; 
 			m=m/5;      	
 				
 		 } 
@@ -344,62 +341,86 @@ int fft_for_5r(double *x_r, double *x_i, double *y_r, double *y_i, int N)
 		j=j+m;
 	}
 
-
 	int n=1;
-	double w_r[5],w_r[5];
+	//fourier matrix for n=5
+	double w5_r,w5_i,w5_r2,w5_i2,w5_r3,w5_i3,w5_r4,w5_i4;
+
+
+	w5_r=cos(-2.0*M_PI/5),w5_i=sin(-2.0*M_PI/5);
+	w5_r2=w5_r*w5_r-w5_i*w5_i,w5_i2=2.0*w5_r*w5_i;
+	w5_r3=w5_r2,w5_i3=-1.0*w5_i2;
+	w5_r4=w5_r,w5_i4=-1.0*w5_i;
+	
+	double w_r,w_i,w_r2,w_i2,w_r3,w_i3,w_r4,w_i4;
 	double wn_r,wn_i;
-	double w5_r,w5_i[5];
-	double tmp1_r,tmp1_i,tmp2_r,tmp2_i;
-	w3_r=cos(-2.0*M_PI/3);
-	w3_i=sin(-2.0*M_PI/3);
-	w3square_r=w3_r*w3_r-w3_i*w3_i;
-	w3square_i=2.0*w3_r*w3_i;
+	double tmp1_r,tmp1_i,tmp2_r,tmp2_i,tmp3_r,tmp3_i,tmp4_r,tmp4_i;
+	
 	
 	while(n<N)      
-	{   w_r=1.0,w_i=0.0;             //W從頭開始 
-		wsquare_r=1.0;
-		wsquare_i=0.0;	  
-	    wn_r=cos(-2.0*M_PI/3/n);       //轉的角度跟N有關 
-	    wn_i=sin(-2.0*M_PI/3/n);
-	    
-	   
+	{  
+		w_r=w_r2=w_r3=w_r4=1.0;  //初始化w
+		w_i=w_i2=w_i3=w_i4=0.0;   
+		
+		
+		wn_r=cos(-2.0*M_PI/5/n);
+		wn_i=sin(-2.0*M_PI/5/n);
+		
+
 	    
 		for(i=0;i<n;i++)   // big group
 		{   
 		
-			for(j=i;j<N;j=j+3*n)     //small group
-			{   
-				//yj=yj+w*y(j+n)+w^2*y(j+2n)
-				//y(j+n)=yj+w3*w*y(j+n)+w3^2*w^2*y(j+2n)
-				//y(j+2n)=yj+w3^2*w*y(j+n)+w3*w^2*y(j+2n)
-				tmp1_r=w_r*y_r[j+n]-w_i*y_i[j+n];    //tmp1=w*y(j+n)
-				tmp1_i=w_r*y_i[j+n]+w_i*y_r[j+n];     
-				tmp2_r=wsquare_r*y_r[j+2*n]-wsquare_i*y_i[j+2*n];//tmp2=w^2*y(j+2n)
-				tmp2_i=wsquare_r*y_i[j+2*n]+wsquare_i*y_r[j+2*n]; 
+			for(j=i;j<N;j=j+5*n)     //small group
+			{ 
+			//tmp1=w*y[j+n],tmp2=w^2*y[j+2n],tmp3=w^3*y[j+3n],tmp4=w^4*y[j+4n]
+			
+			tmp1_r=w_r*y_r[j+n]-w_i*y_i[j+n];    
+			tmp1_i=w_r*y_i[j+n]+w_i*y_r[j+n]; 
+			tmp2_r=w_r2*y_r[j+2*n]-w_i2*y_i[j+2*n];    
+			tmp2_i=w_r2*y_i[j+2*n]+w_i2*y_r[j+2*n];  
+			tmp3_r=w_r3*y_r[j+3*n]-w_i3*y_i[j+3*n];    
+			tmp3_i=w_r3*y_i[j+3*n]+w_i3*y_r[j+3*n];  
+			tmp4_r=w_r4*y_r[j+4*n]-w_i4*y_i[j+4*n];    
+			tmp4_i=w_r4*y_i[j+4*n]+w_i4*y_r[j+4*n];
+			
+			//y[j]=y[j]+tmp1+tmp2+tmp3+tmp4
+			//y[j+n]=y[j]+w*tmp1+w^2*tmp2+w^3*tmp3+w^4*tmp4
+			//y[j+2n]=y[j]+w^2*tmp1+w^4*tmp2+w*tmp3+w^3*tmp4
+			//y[j+3n]=y[j]+w^3*tmp1+w*tmp2+w^4*tmp3+w^2*tmp4
+			//y[j+4n]=y[j]+w^4*tmp1+w^3*tmp2+w^2*tmp3+w*tmp4
+			
+			
+			y_r[j+4*n]=y_r[j]+(w_r*tmp1_r-w_i*tmp1_i)+(w_r2*tmp2_r-w_i2*tmp1_i)+(w_r3*tmp3_r-w_i3*tmp3_i)+(w_r4*tmp4_r-w_i4*tmp4_i);
+			y_i[j+4*n]=y_i[j]+(w_r*tmp1_i+w_i*tmp1_r)+(w_r2*tmp2_i+w_i2*tmp2_r)+(w_r3*tmp3_i+w_i3*tmp3_r)+(w_r4*tmp4_i+w_i4*tmp4_r);
+			y_r[j+3*n]=y_r[j]+(w_r2*tmp1_r-w_i2*tmp1_i)+(w_r4*tmp2_r-w_i4*tmp2_i)+(w_r*tmp3_r-w_i*tmp3_i)+(w_r3*tmp4_r-w_i3*tmp4_i);
+			y_i[j+3*n]=y_i[j]+(w_r2*tmp1_i+w_i2*tmp1_r)+(w_r4*tmp2_i+w_i4*tmp2_r)+(w_r*tmp3_i+w_i*tmp3_r)+(w_r3*tmp4_i+w_i3*tmp4_r);
+			y_r[j+2*n]=y_r[j]+(w_r3*tmp1_r-w_i3*tmp1_i)+(w_r*tmp2_r-w_i*tmp2_i)+(w_r4*tmp3_r-w_i4*tmp3_i)+(w_r2*tmp4_r-w_i2*tmp4_i);
+			y_i[j+2*n]=y_i[j]+(w_r3*tmp1_i+w_i3*tmp1_r)+(w_r*tmp2_i+w_i*tmp2_r)+(w_r4*tmp3_i+w_i4*tmp3_r)+(w_r2*tmp4_i+w_i2*tmp4_r);
+			y_r[j+1*n]=y_r[j]+(w_r4*tmp1_r-w_i4*tmp1_i)+(w_r3*tmp2_r-w_i3*tmp2_i)+(w_r2*tmp3_r-w_i2*tmp3_i)+(w_r*tmp4_r-w_i*tmp4_i);
+			y_i[j+1*n]=y_i[j]+(w_r4*tmp1_i+w_i4*tmp1_r)+(w_r3*tmp2_i+w_i3*tmp2_r)+(w_r2*tmp3_i+w_i2*tmp3_r)+(w_r*tmp4_i+w_i*tmp4_r);
+			y_r[j]=y_r[j]+tmp1_r+tmp2_r+tmp3_r+tmp4_r;
+			y_i[j]=y_i[j]+tmp1_i+tmp2_i+tmp3_i+tmp4_i;
 				
-				y_r[j+2*n]=y_r[j]+(w3square_r*tmp1_r-w3square_i*tmp1_i)+(w3_r*tmp2_r-w3_i*tmp2_i);
-				y_i[j+2*n]=y_i[j]+(w3square_r*tmp1_i+w3square_i*tmp1_r)+(w3_r*tmp2_i+w3_i*tmp2_r);
-				y_r[j+n]=y_r[j]+(w3_r*tmp1_r-w3_i*tmp1_i)+(w3square_r*tmp2_r-w3square_i*tmp2_i);
-				y_i[j+n]=y_i[j]+(w3_r*tmp1_i+w3_i*tmp1_r)+(w3square_r*tmp2_i+w3square_i*tmp2_r);
-				y_r[j]=y_r[j]+tmp1_r+tmp2_r;
-				y_i[j]=y_i[j]+tmp1_i+tmp2_i;
-				
-				
-				
-				
-				
+	
 				
 			}
-				tmp_r=w_r,tmp_i=w_i;     //w轉 -2.0PI/3*n度 
-				w_r=tmp_r*wn_r-tmp_i*wn_i;
-				w_i=tmp_r*wn_i+tmp_i*wn_r;
-				wsquare_r=w_r*w_r-w_i*w_i;
-				wsquare_i=2.0*w_r*w_i;	  
-		
-		
+			
+			tmp_r=w_r,tmp_i=w_i;     //w轉 -2.0PI/5/n度 
+			w_r=tmp_r*wn_r-tmp_i*wn_i;
+			w_i=tmp_r*wn_i+tmp_i*wn_r;
+			
+			//算出2,3,4,次方				
+			w_r2=w_r*w_r-w_i*w_i,     w_i2=2.0*w_r*w_i;
+			w_r3=w_r*w_r2-w_i*w_i2,   w_i3=w_r*w_i2+w_i*w_r2;
+			w_r2=w_r2*w_r2-w_i2*w_i2, w_i2=2.0*w_r2*w_i2;
+			
+			
+			
+			
+			
 		}
 		
-		n=3*n;
+		n=5*n;
 		
 	}
 			
