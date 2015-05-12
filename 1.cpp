@@ -8,51 +8,66 @@ int fft_for_3r(double *x_r, double *x_i, double *y_r, double *y_i, int N);
 int fft_for_5r(double *x_r, double *x_i, double *y_r, double *y_i, int N);
 int fft(double *x_r, double *x_i, double *y_r, double *y_i, int N,int P,int Q ,int R);
 int Group_p(double *x, double *y, int N, int p);
-
+int Generate_N(int p, int q, int r);
 
 
 int main()
 {   double  *x_r,*x_i,*y_r,*y_i; 
-	int i,N,P,Q,R;
-	N=125;
-	P=0;Q=0;R=3;
+	int i,N,p,q,r;
+	clock_t t1, t2;
+	
+	
+
+	
+	
+	printf("Please input p q r=");
+	scanf("%d %d %d", &p, &q, &r);
+	N = Generate_N(p, q, r);
+	printf("N=2^%d 3^%d 5^%d = %d\n",p,q,r,N);
+	
+	
 	x_r = (double *) malloc(N*sizeof(double));
 	x_i = (double *) malloc(N*sizeof(double));
 	y_r = (double *) malloc(N*sizeof(double));
 	y_i = (double *) malloc(N*sizeof(double));
-
-	
 	
 	for(i=0;i<N;i++)
 	{
 	x_r[i]=i;
 	x_i[i]=0;
-	
 	}
+	
+	
+	t1 = clock();
 
-	fft(x_r,x_i,y_r,y_i,N,P,Q,R);
+	fft(x_r,x_i,y_r,y_i,N,p,q,r);
 	
-	
-	for(i=0;i<N;i++)
-	{
-	x_r[i]=i;
-	x_i[i]=0;
-	
-	}
-	fft_for_5r(x_r,x_i,y_r,y_i,N);
+	t2 = clock();
 
+	
+	
 	
 	
 	
 	for(i=0;i<N;i++)
       printf("%f+%fi\n",y_r[i],y_i[i]); 
         
+	printf("fft: %f secs\n", 1.0*(t2-t1)/CLOCKS_PER_SEC);
+	
         system("pause");	
 		
 	return 0;
 }
 
 
+int Generate_N(int p, int q, int r)
+{
+	int N = 1;
+	for(;p>0;p--) N*=2;
+	for(;q>0;q--) N*=3;
+	for(;r>0;r--) N*=5;
+	return N;
+}
 
 
 
@@ -455,8 +470,8 @@ int fft(double *x_r, double *x_i, double *y_r, double *y_i, int N,int P,int Q ,i
 	
 	//N=2^P*3^Q*5^R		
  	//bit reverse by¼É¤Oªk
- 	int n,m,o;
- 	double *t_r,*t_i;
+ 	int n,m,o,h;
+ 	double t_r,t_i;
  
 	n = N;
 	while(n>1)
@@ -480,8 +495,23 @@ int fft(double *x_r, double *x_i, double *y_r, double *y_i, int N,int P,int Q ,i
 			Group_p(x_i+m,y_i+m,n,o);
 			m = m + n;
 		}
-		t_r = x_r; x_r = y_r; y_r = t_r;
-		t_i = x_i; x_i = y_i; y_i = t_i;
+		
+		for(h=0;h<N;h++)
+		{
+			t_r=x_r[h];
+			x_r[h]=y_r[h];
+			y_r[h]=t_r;
+			t_r=x_i[h];
+			x_i[h]=y_i[h];
+			y_i[h]=t_i;
+			
+			
+			
+	
+		}
+		
+		
+		
 		
 		n = n / o;
 	}
@@ -681,11 +711,7 @@ int fft(double *x_r, double *x_i, double *y_r, double *y_i, int N,int P,int Q ,i
 	
 	
       
-	  
-	  
-	  
-	  for(i=0;i<N;i++)
-      printf("%f+%fi\n",y_r[i],y_i[i]);               
+             
     return 1;                
                     
     }
