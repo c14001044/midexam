@@ -6,12 +6,15 @@ int bit_reverse(int N,int B);
 int fft_for_2r(double *x_r, double *x_i, double *y_r, double *y_i, int N);
 int fft_for_3r(double *x_r, double *x_i, double *y_r, double *y_i, int N);
 int fft_for_5r(double *x_r, double *x_i, double *y_r, double *y_i, int N);
+int fft(double *x_r, double *x_i, double *y_r, double *y_i, int N);
+int Group_2(double *x, double *y, int N);
+
 
 
 int main()
 {   double  *x_r,*x_i,*y_r,*y_i; 
 	int i,N;
-	N=25;
+	N=6;
 	x_r = (double *) malloc(N*sizeof(double));
 	x_i = (double *) malloc(N*sizeof(double));
 	y_r = (double *) malloc(N*sizeof(double));
@@ -32,11 +35,11 @@ int main()
 
 	
 	
-	fft_for_5r(x_r,x_i,y_r,y_i,N);
+		Group_2( x_r,  y_r, int N);
 
 	
 	for(i=0;i<N;i++)
-      printf("%f+%fi\n",y_r[i],y_i[i]); 
+      printf("%f\n",y_r[i]); 
         
         system("pause");	
 		
@@ -103,7 +106,7 @@ int fft_for_2r(double *x_r, double *x_i, double *y_r, double *y_i, int N)
 		while(i<N)
 	{
 		//swap y[i]<=>y[j]
-		printf("%d <-> %d\n",i,j);
+		
 		if(i<j)
 		{
 						
@@ -438,6 +441,79 @@ int fft_for_5r(double *x_r, double *x_i, double *y_r, double *y_i, int N)
 	
 return 0;	
 }
+
+
+
+int fft(double *x_r, double *x_i, double *y_r, double *y_i, int N)
+{	
+	int i;
+	
+	for(i=0;i<N;i++)
+	{
+		y_r[i]=x_r[i];
+		y_i[i]=x_i[i];
+	}
+
+    
+        
+                    
+                    
+                    
+                    
+                    
+    }
+    
+    
+int Group_2(double *x, double *y, int N)
+{
+	int i;
+	// Group by (2n) (2n+1)
+	for(i=0;i<N/2;++i)
+	{
+		//y[i] = x[2*i];
+		//y[i+N/2] = x[2*i+1];
+	}
+	// other way!
+	for(i=0;i<N;++i)
+	{
+		y[(i/2) + (N/2)*(i%2)] = x[i];
+	}
+	return 0;
+}
+
+
+
+
+
+
+
+	
+	
+	 
+	
+	
+	
+	
+	
+	
+	
+
+	
+
+
+
+
+
+
+	
+return 0;	
+}
+
+
+
+
+
+
 
 
 
