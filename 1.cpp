@@ -14,8 +14,8 @@ int Group_p(double *x, double *y, int N, int p);
 int main()
 {   double  *x_r,*x_i,*y_r,*y_i; 
 	int i,N,P,Q,R;
-	N=8;
-	P=3;Q=0;R=0;
+	N=125;
+	P=0;Q=0;R=3;
 	x_r = (double *) malloc(N*sizeof(double));
 	x_i = (double *) malloc(N*sizeof(double));
 	y_r = (double *) malloc(N*sizeof(double));
@@ -31,6 +31,15 @@ int main()
 	}
 
 	fft(x_r,x_i,y_r,y_i,N,P,Q,R);
+	
+	
+	for(i=0;i<N;i++)
+	{
+	x_r[i]=i;
+	x_i[i]=0;
+	
+	}
+	fft_for_5r(x_r,x_i,y_r,y_i,N);
 
 	
 	
@@ -641,6 +650,10 @@ int fft(double *x_r, double *x_i, double *y_r, double *y_i, int N,int P,int Q ,i
 	{	
 		for(j=i;j<N;j=j+2*n)//small group
 		{
+			
+			
+			
+			
 			//yj=yj+w*y(j+n)
 			//y(j+n)=yj-w*y(j+n)
 			tmp_r=y_r[j+n]*w_r-y_i[j+n]*w_i;
@@ -653,6 +666,7 @@ int fft(double *x_r, double *x_i, double *y_r, double *y_i, int N,int P,int Q ,i
 			
 			
 		}
+		
 	
 		tmp_r=w_r,tmp_i=w_i;
 		w_r=tmp_r*wn_r-tmp_i*wn_i;
@@ -665,12 +679,14 @@ int fft(double *x_r, double *x_i, double *y_r, double *y_i, int N,int P,int Q ,i
 	
 	}
 	
-		for(j=0;j<n;j++)	
-       {
-	   printf("%f\n",y_r[j]); 
-}
-                    
-    return 0;                
+	
+      
+	  
+	  
+	  
+	  for(i=0;i<N;i++)
+      printf("%f+%fi\n",y_r[i],y_i[i]);               
+    return 1;                
                     
     }
     
