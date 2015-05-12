@@ -36,7 +36,9 @@ int main()
 
 	
 	for(i=0;i<N;i++)
-		printf("%f+%fi\n",y_r[i],y_i[i]); 	
+      printf("%f+%fi\n",y_r[i],y_i[i]); 
+        
+        system("pause");	
 		
 	return 0;
 }
@@ -338,7 +340,7 @@ int fft_for_5r(double *x_r, double *x_i, double *y_r, double *y_i, int N)
 		 } 
 		
 		i=i+1;	 
-		j=j+m;
+		j=j+m;	
 	}
 
 	int n=1;
@@ -348,8 +350,8 @@ int fft_for_5r(double *x_r, double *x_i, double *y_r, double *y_i, int N)
 
 	w5_r=cos(-2.0*M_PI/5),w5_i=sin(-2.0*M_PI/5);
 	w5_r2=w5_r*w5_r-w5_i*w5_i,w5_i2=2.0*w5_r*w5_i;
-	w5_r3=w5_r2,w5_i3=-1.0*w5_i2;
-	w5_r4=w5_r,w5_i4=-1.0*w5_i;
+	w5_r3=w5_r*w5_r2-w5_i*w5_i2,   w5_i3=w5_r*w5_i2+w5_i*w5_r2;
+	w5_r4=w5_r2*w5_r2-w5_i2*w5_i2, w5_i4=2.0*w5_r2*w5_i2;
 	
 	double w_r,w_i,w_r2,w_i2,w_r3,w_i3,w_r4,w_i4;
 	double wn_r,wn_i;
@@ -376,33 +378,35 @@ int fft_for_5r(double *x_r, double *x_i, double *y_r, double *y_i, int N)
 			
 			tmp1_r=w_r*y_r[j+n]-w_i*y_i[j+n];    
 			tmp1_i=w_r*y_i[j+n]+w_i*y_r[j+n]; 
+			
 			tmp2_r=w_r2*y_r[j+2*n]-w_i2*y_i[j+2*n];    
-			tmp2_i=w_r2*y_i[j+2*n]+w_i2*y_r[j+2*n];  
+			tmp2_i=w_r2*y_i[j+2*n]+w_i2*y_r[j+2*n];
+              
 			tmp3_r=w_r3*y_r[j+3*n]-w_i3*y_i[j+3*n];    
-			tmp3_i=w_r3*y_i[j+3*n]+w_i3*y_r[j+3*n];  
+			tmp3_i=w_r3*y_i[j+3*n]+w_i3*y_r[j+3*n];
+              
 			tmp4_r=w_r4*y_r[j+4*n]-w_i4*y_i[j+4*n];    
 			tmp4_i=w_r4*y_i[j+4*n]+w_i4*y_r[j+4*n];
 			
 			//y[j]=y[j]+tmp1+tmp2+tmp3+tmp4
-			//y[j+n]=y[j]+w*tmp1+w^2*tmp2+w^3*tmp3+w^4*tmp4
-			//y[j+2n]=y[j]+w^2*tmp1+w^4*tmp2+w*tmp3+w^3*tmp4
-			//y[j+3n]=y[j]+w^3*tmp1+w*tmp2+w^4*tmp3+w^2*tmp4
-			//y[j+4n]=y[j]+w^4*tmp1+w^3*tmp2+w^2*tmp3+w*tmp4
+			//y[j+n]=y[j]+w5*tmp1+w5^2*tmp2+w5^3*tmp3+w5^4*tmp4
+			//y[j+2n]=y[j]+w5^2*tmp1+w5^4*tmp2+w5*tmp3+w5^3*tmp4
+			//y[j+3n]=y[j]+w5^3*tmp1+w5*tmp2+w5^4*tmp3+w5^2*tmp4
+			//y[j+4n]=y[j]+w5^4*tmp1+w5^3*tmp2+w5^2*tmp3+w5*tmp4
 			
 			
-			y_r[j+4*n]=y_r[j]+(w_r*tmp1_r-w_i*tmp1_i)+(w_r2*tmp2_r-w_i2*tmp1_i)+(w_r3*tmp3_r-w_i3*tmp3_i)+(w_r4*tmp4_r-w_i4*tmp4_i);
-			y_i[j+4*n]=y_i[j]+(w_r*tmp1_i+w_i*tmp1_r)+(w_r2*tmp2_i+w_i2*tmp2_r)+(w_r3*tmp3_i+w_i3*tmp3_r)+(w_r4*tmp4_i+w_i4*tmp4_r);
-			y_r[j+3*n]=y_r[j]+(w_r2*tmp1_r-w_i2*tmp1_i)+(w_r4*tmp2_r-w_i4*tmp2_i)+(w_r*tmp3_r-w_i*tmp3_i)+(w_r3*tmp4_r-w_i3*tmp4_i);
-			y_i[j+3*n]=y_i[j]+(w_r2*tmp1_i+w_i2*tmp1_r)+(w_r4*tmp2_i+w_i4*tmp2_r)+(w_r*tmp3_i+w_i*tmp3_r)+(w_r3*tmp4_i+w_i3*tmp4_r);
-			y_r[j+2*n]=y_r[j]+(w_r3*tmp1_r-w_i3*tmp1_i)+(w_r*tmp2_r-w_i*tmp2_i)+(w_r4*tmp3_r-w_i4*tmp3_i)+(w_r2*tmp4_r-w_i2*tmp4_i);
-			y_i[j+2*n]=y_i[j]+(w_r3*tmp1_i+w_i3*tmp1_r)+(w_r*tmp2_i+w_i*tmp2_r)+(w_r4*tmp3_i+w_i4*tmp3_r)+(w_r2*tmp4_i+w_i2*tmp4_r);
-			y_r[j+1*n]=y_r[j]+(w_r4*tmp1_r-w_i4*tmp1_i)+(w_r3*tmp2_r-w_i3*tmp2_i)+(w_r2*tmp3_r-w_i2*tmp3_i)+(w_r*tmp4_r-w_i*tmp4_i);
-			y_i[j+1*n]=y_i[j]+(w_r4*tmp1_i+w_i4*tmp1_r)+(w_r3*tmp2_i+w_i3*tmp2_r)+(w_r2*tmp3_i+w_i2*tmp3_r)+(w_r*tmp4_i+w_i*tmp4_r);
+			y_r[j+4*n]=y_r[j]+(w5_r*tmp1_r-w5_i*tmp1_i)+(w5_r2*tmp2_r-w5_i2*tmp1_i)+(w5_r3*tmp3_r-w5_i3*tmp3_i)+(w5_r4*tmp4_r-w5_i4*tmp4_i);
+			y_i[j+4*n]=y_i[j]+(w5_r*tmp1_i+w5_i*tmp1_r)+(w5_r2*tmp2_i+w5_i2*tmp2_r)+(w5_r3*tmp3_i+w5_i3*tmp3_r)+(w5_r4*tmp4_i+w5_i4*tmp4_r);
+			y_r[j+3*n]=y_r[j]+(w5_r2*tmp1_r-w5_i2*tmp1_i)+(w5_r4*tmp2_r-w5_i4*tmp2_i)+(w5_r*tmp3_r-w5_i*tmp3_i)+(w5_r3*tmp4_r-w5_i3*tmp4_i);
+			y_i[j+3*n]=y_i[j]+(w5_r2*tmp1_i+w5_i2*tmp1_r)+(w5_r4*tmp2_i+w5_i4*tmp2_r)+(w5_r*tmp3_i+w5_i*tmp3_r)+(w5_r3*tmp4_i+w5_i3*tmp4_r);
+			y_r[j+2*n]=y_r[j]+(w5_r3*tmp1_r-w5_i3*tmp1_i)+(w5_r*tmp2_r-w5_i*tmp2_i)+(w5_r4*tmp3_r-w5_i4*tmp3_i)+(w5_r2*tmp4_r-w5_i2*tmp4_i);
+			y_i[j+2*n]=y_i[j]+(w5_r3*tmp1_i+w5_i3*tmp1_r)+(w5_r*tmp2_i+w5_i*tmp2_r)+(w5_r4*tmp3_i+w5_i4*tmp3_r)+(w5_r2*tmp4_i+w5_i2*tmp4_r);
+			y_r[j+1*n]=y_r[j]+(w5_r4*tmp1_r-w5_i4*tmp1_i)+(w5_r3*tmp2_r-w5_i3*tmp2_i)+(w5_r2*tmp3_r-w5_i2*tmp3_i)+(w5_r*tmp4_r-w5_i*tmp4_i);
+			y_i[j+1*n]=y_i[j]+(w5_r4*tmp1_i+w5_i4*tmp1_r)+(w5_r3*tmp2_i+w5_i3*tmp2_r)+(w5_r2*tmp3_i+w5_i2*tmp3_r)+(w5_r*tmp4_i+w5_i*tmp4_r);
 			y_r[j]=y_r[j]+tmp1_r+tmp2_r+tmp3_r+tmp4_r;
 			y_i[j]=y_i[j]+tmp1_i+tmp2_i+tmp3_i+tmp4_i;
 				
-	
-				
+		
 			}
 			
 			tmp_r=w_r,tmp_i=w_i;     //w轉 -2.0PI/5/n度 
@@ -412,11 +416,10 @@ int fft_for_5r(double *x_r, double *x_i, double *y_r, double *y_i, int N)
 			//算出2,3,4,次方				
 			w_r2=w_r*w_r-w_i*w_i,     w_i2=2.0*w_r*w_i;
 			w_r3=w_r*w_r2-w_i*w_i2,   w_i3=w_r*w_i2+w_i*w_r2;
-			w_r2=w_r2*w_r2-w_i2*w_i2, w_i2=2.0*w_r2*w_i2;
+			w_r4=w_r2*w_r2-w_i2*w_i2, w_i4=2.0*w_r2*w_i2;
 			
 			
-			
-			
+		
 			
 		}
 		
