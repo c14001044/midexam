@@ -17,6 +17,7 @@ int main()
 	clock_t t1, t2;
 	
 	
+
 	
 	
 	printf("Please input p q r=");
@@ -39,7 +40,7 @@ int main()
 	
 	t1 = clock();
 
-	fft(x_r,x_i,y_r,y_i,N,p,q,r);
+	fft_for_5r(x_r,x_i,y_r,y_i,N);
 	
 	t2 = clock();
 
@@ -51,7 +52,7 @@ int main()
 	for(i=0;i<N;i++)
       printf("%f+%fi\n",y_r[i],y_i[i]); 
         
-	//printf("fft: %f secs\n", 1.0*(t2-t1)/CLOCKS_PER_SEC);
+	printf("fft: %f secs\n", 1.0*(t2-t1)/CLOCKS_PER_SEC);
 	
         system("pause");	
 		
@@ -338,7 +339,6 @@ int fft_for_5r(double *x_r, double *x_i, double *y_r, double *y_i, int N)
 	i=j=0;
 		while(i<N)
 	{
-	
 		//swap y[i]<=>y[j]
 
 		if(i<j)
@@ -402,7 +402,7 @@ int fft_for_5r(double *x_r, double *x_i, double *y_r, double *y_i, int N)
 			for(j=i;j<N;j=j+5*n)     //small group
 			{ 
                               
-                        
+                                     
 			//tmp1=w*y[j+n],tmp2=w^2*y[j+2n],tmp3=w^3*y[j+3n],tmp4=w^4*y[j+4n]
 			
 			tmp1_r=w_r*y_r[j+n]-w_i*y_i[j+n];    
@@ -526,7 +526,6 @@ int fft(double *x_r, double *x_i, double *y_r, double *y_i, int N,int P,int Q ,i
 	int p,q,r,i,j;
 	p=1,q=1,r=1;
 	n=1;
-	int p1,p2,p3,p4,p5;
 	
 	double w_r,w_i,w_r2,w_i2,w_r3,w_i3,w_r4,w_i4;
 	double wn_r,wn_i;
@@ -560,30 +559,21 @@ int fft(double *x_r, double *x_i, double *y_r, double *y_i, int N,int P,int Q ,i
 	  
 	for(i=0;i<n;i++)//big group
 	{
-		
-		
-		
-		
 		for(j=i;j<N;j=j+5*n)//small group
 		{
-			
-			p1=j+n;p2=j+2*n;p3=j+3*n;p4=j+4*n;
 			//tmp1=w*y[j+n],tmp2=w^2*y[j+2n],tmp3=w^3*y[j+3n],tmp4=w^4*y[j+4n]
 			
-			tmp_r=y_r[j];
-			tmp_i=y_i[j];
+			tmp1_r=w_r*y_r[j+n]-w_i*y_i[j+n];    
+			tmp1_i=w_r*y_i[j+n]+w_i*y_r[j+n]; 
 			
-			tmp1_r=w_r*y_r[p1]-w_i*y_i[p1];    
-			tmp1_i=w_r*y_i[p1]+w_i*y_r[p1]; 
-			
-			tmp2_r=w_r2*y_r[p2]-w_i2*y_i[p2];    
-			tmp2_i=w_r2*y_i[p2]+w_i2*y_r[p2];
+			tmp2_r=w_r2*y_r[j+2*n]-w_i2*y_i[j+2*n];    
+			tmp2_i=w_r2*y_i[j+2*n]+w_i2*y_r[j+2*n];
               
-			tmp3_r=w_r3*y_r[p3]-w_i3*y_i[p3];    
-			tmp3_i=w_r3*y_i[p3]+w_i3*y_r[p3];
+			tmp3_r=w_r3*y_r[j+3*n]-w_i3*y_i[j+3*n];    
+			tmp3_i=w_r3*y_i[j+3*n]+w_i3*y_r[j+3*n];
               
-			tmp4_r=w_r4*y_r[p4]-w_i4*y_i[p4];    
-			tmp4_i=w_r4*y_i[p4]+w_i4*y_r[p4];
+			tmp4_r=w_r4*y_r[j+4*n]-w_i4*y_i[j+4*n];    
+			tmp4_i=w_r4*y_i[j+4*n]+w_i4*y_r[j+4*n];
 
 			//y[j]=y[j]+tmp1+tmp2+tmp3+tmp4
 			//y[j+n]=y[j]+w5*tmp1+w5^2*tmp2+w5^3*tmp3+w5^4*tmp4
@@ -592,20 +582,20 @@ int fft(double *x_r, double *x_i, double *y_r, double *y_i, int N,int P,int Q ,i
 			//y[j+4n]=y[j]+w5^4*tmp1+w5^3*tmp2+w5^2*tmp3+w5*tmp4
 			
 			
-			y_r[p1]=tmp_r+(w5_r*tmp1_r-w5_i*tmp1_i)+(w5_r2*tmp2_r-w5_i2*tmp1_i)+(w5_r3*tmp3_r-w5_i3*tmp3_i)+(w5_r4*tmp4_r-w5_i4*tmp4_i);
-			y_i[p1]=tmp_i+(w5_r*tmp1_i+w5_i*tmp1_r)+(w5_r2*tmp2_i+w5_i2*tmp2_r)+(w5_r3*tmp3_i+w5_i3*tmp3_r)+(w5_r4*tmp4_i+w5_i4*tmp4_r);
+			y_r[j+n]=y_r[j]+(w5_r*tmp1_r-w5_i*tmp1_i)+(w5_r2*tmp2_r-w5_i2*tmp1_i)+(w5_r3*tmp3_r-w5_i3*tmp3_i)+(w5_r4*tmp4_r-w5_i4*tmp4_i);
+			y_i[j+n]=y_i[j]+(w5_r*tmp1_i+w5_i*tmp1_r)+(w5_r2*tmp2_i+w5_i2*tmp2_r)+(w5_r3*tmp3_i+w5_i3*tmp3_r)+(w5_r4*tmp4_i+w5_i4*tmp4_r);
 			
-			y_r[p2]=tmp_r+(w5_r2*tmp1_r-w5_i2*tmp1_i)+(w5_r4*tmp2_r-w5_i4*tmp2_i)+(w5_r*tmp3_r-w5_i*tmp3_i)+(w5_r3*tmp4_r-w5_i3*tmp4_i);
-			y_i[p2]=tmp_i+(w5_r2*tmp1_i+w5_i2*tmp1_r)+(w5_r4*tmp2_i+w5_i4*tmp2_r)+(w5_r*tmp3_i+w5_i*tmp3_r)+(w5_r3*tmp4_i+w5_i3*tmp4_r);
+			y_r[j+2*n]=y_r[j]+(w5_r2*tmp1_r-w5_i2*tmp1_i)+(w5_r4*tmp2_r-w5_i4*tmp2_i)+(w5_r*tmp3_r-w5_i*tmp3_i)+(w5_r3*tmp4_r-w5_i3*tmp4_i);
+			y_i[j+2*n]=y_i[j]+(w5_r2*tmp1_i+w5_i2*tmp1_r)+(w5_r4*tmp2_i+w5_i4*tmp2_r)+(w5_r*tmp3_i+w5_i*tmp3_r)+(w5_r3*tmp4_i+w5_i3*tmp4_r);
 			
-			y_r[p3]=tmp_r+(w5_r3*tmp1_r-w5_i3*tmp1_i)+(w5_r*tmp2_r-w5_i*tmp2_i)+(w5_r4*tmp3_r-w5_i4*tmp3_i)+(w5_r2*tmp4_r-w5_i2*tmp4_i);
-			y_i[p3]=tmp_i+(w5_r3*tmp1_i+w5_i3*tmp1_r)+(w5_r*tmp2_i+w5_i*tmp2_r)+(w5_r4*tmp3_i+w5_i4*tmp3_r)+(w5_r2*tmp4_i+w5_i2*tmp4_r);
+			y_r[j+3*n]=y_r[j]+(w5_r3*tmp1_r-w5_i3*tmp1_i)+(w5_r*tmp2_r-w5_i*tmp2_i)+(w5_r4*tmp3_r-w5_i4*tmp3_i)+(w5_r2*tmp4_r-w5_i2*tmp4_i);
+			y_i[j+3*n]=y_i[j]+(w5_r3*tmp1_i+w5_i3*tmp1_r)+(w5_r*tmp2_i+w5_i*tmp2_r)+(w5_r4*tmp3_i+w5_i4*tmp3_r)+(w5_r2*tmp4_i+w5_i2*tmp4_r);
 			
-			y_r[p4]=tmp_r+(w5_r4*tmp1_r-w5_i4*tmp1_i)+(w5_r3*tmp2_r-w5_i3*tmp2_i)+(w5_r2*tmp3_r-w5_i2*tmp3_i)+(w5_r*tmp4_r-w5_i*tmp4_i);
-			y_i[p4]=tmp_i+(w5_r4*tmp1_i+w5_i4*tmp1_r)+(w5_r3*tmp2_i+w5_i3*tmp2_r)+(w5_r2*tmp3_i+w5_i2*tmp3_r)+(w5_r*tmp4_i+w5_i*tmp4_r);
+			y_r[j+4*n]=y_r[j]+(w5_r4*tmp1_r-w5_i4*tmp1_i)+(w5_r3*tmp2_r-w5_i3*tmp2_i)+(w5_r2*tmp3_r-w5_i2*tmp3_i)+(w5_r*tmp4_r-w5_i*tmp4_i);
+			y_i[j+4*n]=y_i[j]+(w5_r4*tmp1_i+w5_i4*tmp1_r)+(w5_r3*tmp2_i+w5_i3*tmp2_r)+(w5_r2*tmp3_i+w5_i2*tmp3_r)+(w5_r*tmp4_i+w5_i*tmp4_r);
 			
-			y_r[j]=tmp_r+tmp1_r+tmp2_r+tmp3_r+tmp4_r;
-			y_i[j]=tmp_i+tmp1_i+tmp2_i+tmp3_i+tmp4_i;
+			y_r[j]=y_r[j]+tmp1_r+tmp2_r+tmp3_r+tmp4_r;
+			y_i[j]=y_i[j]+tmp1_i+tmp2_i+tmp3_i+tmp4_i;
 			
 			
 			
@@ -619,10 +609,6 @@ int fft(double *x_r, double *x_i, double *y_r, double *y_i, int N,int P,int Q ,i
 			w_r2=w_r*w_r-w_i*w_i,     w_i2=2.0*w_r*w_i;
 			w_r3=w_r*w_r2-w_i*w_i2,   w_i3=w_r*w_i2+w_i*w_r2;
 			w_r4=w_r2*w_r2-w_i2*w_i2, w_i4=2.0*w_r2*w_i2;
-			
-			
-			
-			
 		
 	}
 	
@@ -742,8 +728,4 @@ int Group_p(double *x, double *y, int N, int p)
 	}	
 	return 0;
 }
-
-
-
-
 
