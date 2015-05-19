@@ -49,7 +49,7 @@ int main()
 	
 	
 	for(i=0;i<N;i++)
-      printf("%f+%fi\n",y_r[i],y_i[i]); 
+     printf("%f+%fi\n",y_r[i],y_i[i]); 
         
 	//printf("fft: %f secs\n", 1.0*(t2-t1)/CLOCKS_PER_SEC);
 	
@@ -535,10 +535,10 @@ int fft(double *x_r, double *x_i, double *y_r, double *y_i, int N,int P,int Q ,i
 	
 	//fourier matrix for n=5
 	double w5_r,w5_i,w5_r2,w5_i2,w5_r3,w5_i3,w5_r4,w5_i4;
-	w5_r=cos(-2.0*M_PI/5),w5_i=sin(-2.0*M_PI/5);
-	w5_r2=w5_r*w5_r-w5_i*w5_i,w5_i2=2.0*w5_r*w5_i;
-	w5_r3=w5_r*w5_r2-w5_i*w5_i2,   w5_i3=w5_r*w5_i2+w5_i*w5_r2;
-	w5_r4=w5_r2*w5_r2-w5_i2*w5_i2, w5_i4=2.0*w5_r2*w5_i2;
+	w5_r=cos(-2.0*M_PI/5);w5_i=sin(-2.0*M_PI/5);
+	w5_r2=w5_r*w5_r-w5_i*w5_i;w5_i2=2.0*w5_r*w5_i;
+	w5_r3=w5_r*w5_r2-w5_i*w5_i2; w5_i3=w5_r*w5_i2+w5_i*w5_r2;
+	w5_r4=w5_r2*w5_r2-w5_i2*w5_i2; w5_i4=2.0*w5_r2*w5_i2;
 	
 	//fourier matrix for n=3
 	double w3_r,w3_i,w3_r2,w3_i2;
@@ -592,7 +592,7 @@ int fft(double *x_r, double *x_i, double *y_r, double *y_i, int N,int P,int Q ,i
 			//y[j+4n]=y[j]+w5^4*tmp1+w5^3*tmp2+w5^2*tmp3+w5*tmp4
 			
 			
-			y_r[p1]=tmp_r+(w5_r*tmp1_r-w5_i*tmp1_i)+(w5_r2*tmp2_r-w5_i2*tmp1_i)+(w5_r3*tmp3_r-w5_i3*tmp3_i)+(w5_r4*tmp4_r-w5_i4*tmp4_i);
+			y_r[p1]=tmp_r+(w5_r*tmp1_r-w5_i*tmp1_i)+(w5_r2*tmp2_r-w5_i2*tmp2_i)+(w5_r3*tmp3_r-w5_i3*tmp3_i)+(w5_r4*tmp4_r-w5_i4*tmp4_i);
 			y_i[p1]=tmp_i+(w5_r*tmp1_i+w5_i*tmp1_r)+(w5_r2*tmp2_i+w5_i2*tmp2_r)+(w5_r3*tmp3_i+w5_i3*tmp3_r)+(w5_r4*tmp4_i+w5_i4*tmp4_r);
 			
 			y_r[p2]=tmp_r+(w5_r2*tmp1_r-w5_i2*tmp1_i)+(w5_r4*tmp2_r-w5_i4*tmp2_i)+(w5_r*tmp3_r-w5_i*tmp3_i)+(w5_r3*tmp4_r-w5_i3*tmp4_i);
@@ -610,6 +610,7 @@ int fft(double *x_r, double *x_i, double *y_r, double *y_i, int N,int P,int Q ,i
 			
 			
 			
+			
 		}
 	
 			tmp_r=w_r,tmp_i=w_i;     //wÂà -2.0PI/5/n«× 
@@ -621,7 +622,8 @@ int fft(double *x_r, double *x_i, double *y_r, double *y_i, int N,int P,int Q ,i
 			w_r4=w_r2*w_r2-w_i2*w_i2, w_i4=2.0*w_r2*w_i2;
 			
 			
-			
+
+      
 			
 		
 	}
