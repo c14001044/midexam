@@ -8,6 +8,7 @@ int fft_for_3r(double *x_r, double *x_i, double *y_r, double *y_i, int N);
 int fft_for_5r(double *x_r, double *x_i, double *y_r, double *y_i, int N);
 int fft(double *x_r, double *x_i, double *y_r, double *y_i, int N,int P,int Q ,int R);
 int FDCT(double *x,double *y,int N,int P,int Q ,int R);
+int FDST(double *x,double *y,int N);
 int Group_p(double *x, double *y, int N, int p);
 int Generate_N(int p, int q, int r);
 
@@ -20,10 +21,10 @@ int main()
 	
 	
 	
-	printf("Please input p q r=");
-	scanf("%d %d %d", &p, &q, &r);
-	N = Generate_N(p, q, r);
-	printf("N=2^%d 3^%d 5^%d = %d\n",p,q,r,N);
+	printf("Please input N=");
+	scanf("%d",&N);
+	
+	
 	
 	
 	x = (double *) malloc(N*sizeof(double));
@@ -40,7 +41,7 @@ int main()
 	
 	t1 = clock();
 
-	FDCT(x,y,N,p,q,r);
+	FDST(x,y,N);
 	
 	t2 = clock();
 
@@ -50,9 +51,9 @@ int main()
 	
 	
 	for(i=0;i<N;i++)
-     printf("%f\n",y); 
+     printf("%f\n",y[i]); 
         
-	//printf("fft: %f secs\n", 1.0*(t2-t1)/CLOCKS_PER_SEC);
+	
 	
         system("pause");	
 		
@@ -753,7 +754,7 @@ int FDCT(double *x,double *y,int N,int P,int Q ,int R)
 {
 	double  *x_r,*x_i,*y_r,*y_i; 
 	int i;
-	
+	double ck;
 	x_r = (double *) malloc(4*N*sizeof(double));
 	x_i = (double *) malloc(4*N*sizeof(double));
 	y_r = (double *) malloc(4*N*sizeof(double));
@@ -764,17 +765,17 @@ int FDCT(double *x,double *y,int N,int P,int Q ,int R)
 	for(i=0;i<4*N;i++)
 	{
 		
-		printf("%d\n",i);
-		x_r=0;
-		x_i=0;
+		
+		x_r[i]=0;
+		x_i[i]=0;
 			
 	}
 	
 	for(i=0;i<N;i++)
 	{	
 		
-		x_r[2*i+1]+=x[i];
-		printf("%d\n",i);
+		x_r[(2*i)+1]=x_r[2*i+1]+x[i];
+		
 		
 	}
 		
@@ -782,8 +783,17 @@ int FDCT(double *x,double *y,int N,int P,int Q ,int R)
 	fft(x_r,x_i,y_r,y_i,4*N,P+2,Q,R);
 	
 	
+	
+	ck=sqrt(2.0/N);
+	
+	
 	for(i=0;i<N;i++)
-	y[i]=y_r[i];
+	{
+	
+		y[i]=y_r[i]*ck;
+	}
+	
+	y[0]=y[0]/sqrt(2);
 	
 	
 	return 1;
@@ -793,4 +803,45 @@ int FDCT(double *x,double *y,int N,int P,int Q ,int R)
 
 
 
+int FDST(double *x,double *y,int N)
+{
+	double  *x_r,*x_i,*y_r,*y_i; 
+	int i;
+	x_r = (double *) malloc(2*(N+1)*sizeof(double));
+	x_i = (double *) malloc(2*(N+1)*sizeof(double));
+	y_r = (double *) malloc(2*(N+1)*sizeof(double));
+	y_i = (double *) malloc(2*(N+1)*sizeof(double));
+	
+	
+	
+	for(i=0;i<2*(N+1);i++)
+	{
+		
+		
+		x_r[i]=0;
+		x_i[i]=0;
+			
+	}
+	
+	for(i=0;i<N;i++)
+	{	
+		
+		x_r[i+1]+=x[i];
+		
+		
+	}
+		
+		
+	fft_for_2r(x_r,x_i,y_r,y_i,2*(N+1));
+	
+	
 
+	
+	for(i=0;i<N;i++)
+		y[i]-=y_i[i+1];
+	
+	
+	return 1;
+	
+	
+}
